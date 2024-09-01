@@ -17,7 +17,7 @@ import { AppContext } from '../apiservice/appcontext';
 
 const FormInfo = () => {
   const navigation = useNavigation();
-  const { formData, setFormData } = useContext(AppContext);
+  const { formData, updateFormInfo } = useContext(AppContext);  // Use updateFormInfo method from context
 
   const navigateToCreateAccount = () => {
     navigation.navigate('signupscreen/create_account');
@@ -60,10 +60,7 @@ const FormInfo = () => {
               <Icon name="briefcase" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.formInfo.businessName}
-                onChangeText={(text) => setFormData(prevData => ({
-                  ...prevData,
-                  formInfo: { ...prevData.formInfo, businessName: text }
-                }))}
+                onChangeText={(text) => updateFormInfo('businessName', text)}  // Update state using context method
                 placeholder="Business Name"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -76,10 +73,7 @@ const FormInfo = () => {
               <Icon name="id-card" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.formInfo.informalName}
-                onChangeText={(text) => setFormData(prevData => ({
-                  ...prevData,
-                  formInfo: { ...prevData.formInfo, informalName: text }
-                }))}
+                onChangeText={(text) => updateFormInfo('informalName', text)}  // Update state using context method
                 placeholder="Informal Name"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -92,10 +86,7 @@ const FormInfo = () => {
               <Icon name="map-marker" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.formInfo.streetAddress}
-                onChangeText={(text) => setFormData(prevData => ({
-                  ...prevData,
-                  formInfo: { ...prevData.formInfo, streetAddress: text }
-                }))}
+                onChangeText={(text) => updateFormInfo('streetAddress', text)}  // Update state using context method
                 placeholder="Street Address"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -108,10 +99,7 @@ const FormInfo = () => {
               <Icon name="building" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.formInfo.city}
-                onChangeText={(text) => setFormData(prevData => ({
-                  ...prevData,
-                  formInfo: { ...prevData.formInfo, city: text }
-                }))}
+                onChangeText={(text) => updateFormInfo('city', text)}  // Update state using context method
                 placeholder="City"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -126,10 +114,7 @@ const FormInfo = () => {
                 <Icon name="caret-down" size={20} color="gray" style={styles.inputIcon} />
                 <TextInput
                   value={formData.formInfo.state}
-                  onChangeText={(text) => setFormData(prevData => ({
-                    ...prevData,
-                    formInfo: { ...prevData.formInfo, state: text }
-                  }))}
+                  onChangeText={(text) => updateFormInfo('state', text)}  // Update state using context method
                   placeholder="State"
                   placeholderTextColor={'gray'}
                   style={styles.textInput}
@@ -142,10 +127,7 @@ const FormInfo = () => {
                 <Icon name="map-pin" size={20} color="gray" style={styles.inputIcon} />
                 <TextInput
                   value={formData.formInfo.zipcode}
-                  onChangeText={(text) => setFormData(prevData => ({
-                    ...prevData,
-                    formInfo: { ...prevData.formInfo, zipcode: text }
-                  }))}
+                  onChangeText={(text) => updateFormInfo('zipcode', text)}  // Update state using context method
                   placeholder="Zipcode"
                   placeholderTextColor={'gray'}
                   style={styles.textInput}

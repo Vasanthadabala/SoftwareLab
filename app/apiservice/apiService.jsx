@@ -6,7 +6,7 @@ const BASE_URL = 'https://sowlab.com/assignment/';
 // Create an Axios instance
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000, // Set a timeout for the request (10 seconds)
+  timeout: 10000,
 });
 
 // Helper function to handle FormData
@@ -14,7 +14,7 @@ const buildFormData = (data) => {
   const formData = new FormData();
   for (const key in data) {
     if (data[key] instanceof Object && !(data[key] instanceof File)) {
-      formData.append(key, JSON.stringify(data[key]));
+      formData.append(key, JSON.stringify(data[key])); // Stringify nested objects
     } else {
       formData.append(key, data[key]);
     }
@@ -25,18 +25,27 @@ const buildFormData = (data) => {
 // Function to handle user registration
 export const registerUser = async (registerData) => {
   try {
-    // Create FormData instance and ensure social_id is included
-    const formData = buildFormData(registerData);
-    formData.append('social_id', '0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx'); // Use the provided social_id
+
+    const preparedData = {
+      ...registerData,
+      social_id: registerData.social_id || '',
+    };
+
+    const formData = buildFormData(preparedData);
 
     const response = await api.post('/user/register', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data', // Set Content-Type only for FormData
+        'Content-Type': 'multipart/form-data',
       },
     });
 
-    console.log('Registration successful:', response.data);
-    return response.data;
+    if (response.data.success === true) { // Assuming API returns boolean true/false
+      console.log('Registration successful:', response.data);
+      return response.data;
+    } else {
+      console.error('Registration failed:', response.data.message);
+      return response.data;
+    }
   } catch (error) {
     handleError(error, 'Error registering user');
   }
@@ -51,8 +60,13 @@ export const loginUser = async (loginData) => {
       },
     });
 
-    console.log('Login successful:', response.data);
-    return response.data;
+    if (response.data.success === true) {
+      console.log('Login successful:', response.data);
+      return response.data;
+    } else {
+      console.error('Login failed:', response.data.message);
+      return response.data;
+    }
   } catch (error) {
     handleError(error, 'Error logging in');
   }
@@ -67,8 +81,13 @@ export const forgotPassword = async (forgotPasswordData) => {
       },
     });
 
-    console.log('Forgot password response:', response.data);
-    return response.data;
+    if (response.data.success === true) {
+      console.log('OTP sent successfully:', response.data);
+      return response.data;
+    } else {
+      console.error('Error sending OTP:', response.data.message);
+      return response.data;
+    }
   } catch (error) {
     handleError(error, 'Error sending OTP');
   }
@@ -83,8 +102,13 @@ export const verifyOtp = async (verifyOtpData) => {
       },
     });
 
-    console.log('OTP verification response:', response.data);
-    return response.data;
+    if (response.data.success === true) {
+      console.log('OTP verification successful:', response.data);
+      return response.data;
+    } else {
+      console.error('OTP verification failed:', response.data.message);
+      return response.data;
+    }
   } catch (error) {
     handleError(error, 'Error verifying OTP');
   }
@@ -99,8 +123,13 @@ export const resetPassword = async (resetPasswordData) => {
       },
     });
 
-    console.log('Password reset response:', response.data);
-    return response.data;
+    if (response.data.success === true) {
+      console.log('Password reset successful:', response.data);
+      return response.data;
+    } else {
+      console.error('Password reset failed:', response.data.message);
+      return response.data;
+    }
   } catch (error) {
     handleError(error, 'Error resetting password');
   }

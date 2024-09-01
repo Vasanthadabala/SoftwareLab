@@ -10,15 +10,34 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../apiservice/appcontext';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+
+// Configure Google Sign-In
+GoogleSignin.configure({
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with your webClientId
+  offlineAccess: false,
+});
 
 const CreateAccount = () => {
   const navigation = useNavigation();
-  const { formData, setFormData } = useContext(AppContext);
+  const { formData, updateUserRegistration } = useContext(AppContext);
+
+  useEffect(() => {
+    // Optionally check if the user is already signed in
+    GoogleSignin.getCurrentUser()
+      .then(user => {
+        if (user) {
+          // Handle user already signed in
+          console.log('User is already signed in:', user);
+        }
+      })
+      .catch(error => console.error('GoogleSignin.getCurrentUser error:', error));
+  }, []);
 
   const navigateToLogin = () => {
     navigation.navigate('loginscreen/login');
@@ -63,11 +82,32 @@ const CreateAccount = () => {
     return true;
   };
 
-  // Social Login Handlers (Placeholder)
-  const handleGoogleLogin = () => {
-    Alert.alert('Info', 'Google login is not implemented yet.');
+  const handleGoogleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const { idToken, user } = userInfo;
+
+      // Now you can use the Google ID token for authentication with your server
+      console.log('Google ID Token:', idToken);
+      console.log('Google User Info:', user);
+
+      // Optionally navigate or handle user info here
+      Alert.alert('Google Login Success', `Welcome, ${user.name}!`);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Login Cancelled', 'Google login was cancelled.');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('Login In Progress', 'Google login is in progress.');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Play Services Not Available', 'Google Play Services are not available.');
+      } else {
+        Alert.alert('Login Error', `An error occurred: ${error.message}`);
+      }
+    }
   };
 
+  // Social Login Handlers (Placeholder)
   const handleAppleLogin = () => {
     Alert.alert('Info', 'Apple login is not implemented yet.');
   };
@@ -103,7 +143,7 @@ const CreateAccount = () => {
               <Icon name="user" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.user.username}
-                onChangeText={(text) => setFormData({ ...formData, user: { ...formData.user, username: text } })}
+                onChangeText={(text) => updateUserRegistration('username', text)}
                 placeholder="Username"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -116,7 +156,7 @@ const CreateAccount = () => {
               <Icon name="at" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.user.email}
-                onChangeText={(text) => setFormData({ ...formData, user: { ...formData.user, email: text } })}
+                onChangeText={(text) => updateUserRegistration('email', text)}
                 placeholder="Email"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -130,7 +170,7 @@ const CreateAccount = () => {
               <Icon name="phone" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.user.phone}
-                onChangeText={(text) => setFormData({ ...formData, user: { ...formData.user, phone: text } })}
+                onChangeText={(text) => updateUserRegistration('phone', text)}
                 placeholder="Phone Number"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -144,7 +184,7 @@ const CreateAccount = () => {
               <Icon name="lock" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.user.password}
-                onChangeText={(text) => setFormData({ ...formData, user: { ...formData.user, password: text } })}
+                onChangeText={(text) => updateUserRegistration('password', text)}
                 placeholder="Password"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}
@@ -158,7 +198,7 @@ const CreateAccount = () => {
               <Icon name="lock" size={20} color="gray" style={styles.inputIcon} />
               <TextInput
                 value={formData.user.confirmPassword}
-                onChangeText={(text) => setFormData({ ...formData, user: { ...formData.user, confirmPassword: text } })}
+                onChangeText={(text) => updateUserRegistration('confirmPassword', text)}
                 placeholder="Re-enter Password"
                 placeholderTextColor={'gray'}
                 style={styles.textInput}

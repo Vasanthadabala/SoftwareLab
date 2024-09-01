@@ -21,6 +21,7 @@ const Verification = () => {
   };
 
   const navigateToBusinessHours = () => {
+    // Ensure `isFileAttached` is true before navigating
     if (formData.verification.isFileAttached) {
       navigation.navigate('signupscreen/businesshours');
     } else {
@@ -29,11 +30,10 @@ const Verification = () => {
   };
 
   const handleFileAttachment = () => {
-    // Placeholder for future implementation of file attachment logic
-    // This could involve a file picker or integration with native file system APIs
+    // Logic for file attachment could be implemented here in the future
     Alert.alert('File Attachment', 'File attached successfully!');
 
-    // Update state to reflect that a file has been attached
+    // Update the global state to reflect that a file has been attached
     setFormData(prevData => ({
       ...prevData,
       verification: { ...prevData.verification, isFileAttached: true }

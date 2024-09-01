@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../apiservice/appcontext';
-import { registerUser } from '../apiservice/apiService';
+import { registerUser } from '../apiservice/apiService';  // Ensure this function is correctly implemented
 
 const BusinessHours = () => {
   const navigation = useNavigation();
@@ -22,11 +22,16 @@ const BusinessHours = () => {
   const daysOfWeek = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
   const timeSlots = ['9AM - 11AM', '11AM - 1PM', '1PM - 3PM', '3PM - 5PM'];
 
+  // Default values to avoid undefined issues
+  const selectedDays = formData.businessHours?.selectedDays || [];
+  const selectedTimeSlots = formData.businessHours?.selectedTimeSlots || [];
+
   const toggleSelection = (item, type) => {
     setFormData(prevData => {
-      const selectedItems = prevData.businessHours[type].includes(item)
-        ? prevData.businessHours[type].filter(i => i !== item)
-        : [...prevData.businessHours[type], item];
+      const currentSelection = prevData.businessHours[type] || [];
+      const selectedItems = currentSelection.includes(item)
+        ? currentSelection.filter(i => i !== item)
+        : [...currentSelection, item];
       return {
         ...prevData,
         businessHours: {
@@ -40,19 +45,16 @@ const BusinessHours = () => {
   const validateFormData = () => {
     const { user, formInfo, businessHours } = formData;
     
-    // Validate user information
     if (!user.username || !user.email || !user.phone || !user.password || !user.confirmPassword) {
       Alert.alert('Missing User Information', 'Please fill out all required user fields.');
       return false;
     }
 
-    // Validate form information
     if (!formInfo.businessName || !formInfo.streetAddress || !formInfo.city || !formInfo.state || !formInfo.zipcode) {
       Alert.alert('Missing Business Information', 'Please fill out all required business info fields.');
       return false;
     }
 
-    // Validate business hours
     if (businessHours.selectedDays.length === 0 || businessHours.selectedTimeSlots.length === 0) {
       Alert.alert('Selection Error', 'Please select at least one day and one time slot.');
       return false;
@@ -95,14 +97,14 @@ const BusinessHours = () => {
             key={index}
             style={[
               styles.dayButton,
-              formData.businessHours.selectedDays.includes(day) && styles.selectedButton,
+              selectedDays.includes(day) && styles.selectedButton,
             ]}
             onPress={() => toggleSelection(day, 'selectedDays')}
           >
             <Text
               style={[
                 styles.dayButtonText,
-                formData.businessHours.selectedDays.includes(day) && styles.selectedButtonText,
+                selectedDays.includes(day) && styles.selectedButtonText,
               ]}
             >
               {day}
@@ -118,14 +120,14 @@ const BusinessHours = () => {
             key={index}
             style={[
               styles.timeSlotButton,
-              formData.businessHours.selectedTimeSlots.includes(slot) && styles.selectedButton,
+              selectedTimeSlots.includes(slot) && styles.selectedButton,
             ]}
             onPress={() => toggleSelection(slot, 'selectedTimeSlots')}
           >
             <Text
               style={[
                 styles.timeSlotButtonText,
-                formData.businessHours.selectedTimeSlots.includes(slot) && styles.selectedButtonText,
+                selectedTimeSlots.includes(slot) && styles.selectedButtonText,
               ]}
             >
               {slot}
